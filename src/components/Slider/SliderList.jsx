@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import Image from 'next/image';
 import images from '~/assets/images';
 
-export function SliderList() {
+const SliderList = () => {
 	const data = [
 		{
 			photo: 'https://i.picsum.photos/id/244/70/70.jpg?hmac=YlvDLXFCAXsq4GspcIdX3jodn6ysMue46rQYIoSZKdc',
@@ -90,4 +91,6 @@ export function SliderList() {
 			<FormControlLabel control={<Checkbox defaultChecked />} label="Active" /> */}
 		</>
 	);
-}
+};
+
+export default memo(SliderList);

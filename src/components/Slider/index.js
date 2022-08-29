@@ -1,2 +1,2 @@
-export { SliderList } from './SliderList';
-export { SliderPreview } from './SliderPreview';
+export { default as SliderList } from './SliderList';
+export { default as SliderPreview } from './SliderPreview';

@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import Image from 'next/image';
 import { Delete } from '@mui/icons-material';
 import images from '~/assets/images';
 
-export function SliderPreview({ data = [], onDelete }) {
+const SliderPreview = ({ data = [], onDelete }) => {
 	return (
 		<>
 			{data.length ? (
@@ -38,4 +39,6 @@ export function SliderPreview({ data = [], onDelete }) {
 			) : null}
 		</>
 	);
-}
+};
+
+export default memo(SliderPreview);

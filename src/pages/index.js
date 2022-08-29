@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import Image from 'next/image';
 import {
 	CssBaseline,
@@ -72,7 +72,6 @@ export default function Home() {
 				if (files.hasOwnProperty(key)) {
 					const file = files[key];
 					file.preview = URL.createObjectURL(file);
-					console.log(file.preview);
 					photos.push(file);
 				}
 			}
@@ -86,10 +85,13 @@ export default function Home() {
 		setType(value);
 	};
 
-	const handleDeletePhoto = (item) => {
-		const newPhotos = photos.filter((photo) => photo.name !== item.name);
-		setPhotos(newPhotos);
-	};
+	const handleDeletePhoto = useCallback(
+		(item) => {
+			const newPhotos = photos.filter((photo) => photo.name !== item.name);
+			setPhotos(newPhotos);
+		},
+		[photos]
+	);
 
 	const handleSave = () => {
 		if (photos.length === 0) {
