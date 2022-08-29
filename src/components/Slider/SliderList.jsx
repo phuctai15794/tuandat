@@ -1,62 +1,69 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-
-function createData(name, calories, fat, carbs, protein) {
-	return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-	createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-	createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-	createData('Eclair', 262, 16.0, 24, 6.0),
-	createData('Cupcake', 305, 3.7, 67, 4.3),
-	createData('Gingerbread', 356, 16.0, 49, 3.9)
-];
+import Image from 'next/image';
+import images from '~/assets/images';
 
 export function SliderList() {
+	const data = [
+		{
+			photo: 'https://i.picsum.photos/id/244/70/70.jpg?hmac=YlvDLXFCAXsq4GspcIdX3jodn6ysMue46rQYIoSZKdc',
+			name: 'Non nulla laborum ea voluptate fugiat',
+			type: 'Full'
+		},
+		{
+			photo: 'https://i.picsum.photos/id/189/70/70.jpg?hmac=dfhlKdplufBznGNMO81F0ozjfFJUrUQ02LrMvKr4zvI',
+			name: 'Non ullamco incididunt irure elit irure',
+			type: 'Advertise'
+		},
+		{
+			photo: 'https://i.picsum.photos/id/98/70/70.jpg?hmac=8iTVjWcixrXVWqF02O3kI99gSbD3P1JhBN3PTzlp-Co',
+			name: 'Dolore quis aliqua velit nisi',
+			type: 'Factory'
+		},
+		{
+			photo: 'https://i.picsum.photos/id/196/70/70.jpg?hmac=Y_7L4KHDadmcf7QEbtumoHdpA-kwwX2wPzQBb_qMQAA',
+			name: 'Eu minim magna enim aliquip excepteur culpa',
+			type: 'Partner'
+		}
+	];
+
 	return (
-		<TableContainer component={Paper}>
-			<Table sx={{ minWidth: 650 }} aria-label="simple table">
-				<TableHead>
-					<TableRow>
-						<TableCell>Dessert (100g serving)</TableCell>
-						<TableCell align="right">Calories</TableCell>
-						<TableCell align="right">Fat&nbsp;(g)</TableCell>
-						<TableCell align="right">Carbs&nbsp;(g)</TableCell>
-						<TableCell align="right">Protein&nbsp;(g)</TableCell>
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					{rows.map((row) => (
-						<TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-							<TableCell component="th" scope="row">
-								{row.name}
-							</TableCell>
-							<TableCell align="right">{row.calories}</TableCell>
-							<TableCell align="right">{row.fat}</TableCell>
-							<TableCell align="right">{row.carbs}</TableCell>
-							<TableCell align="right">{row.protein}</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-			{/* <Stack
-				className="tw-border tw-border-solid tw-rounded-md tw-border-neutral-200"
-				direction="row"
-				alignItems="center"
-				width={150}
-				marginX="auto"
-				marginBottom={1.5}
-			>
-				<Image
-					className="tw-rounded-md"
-					src={photo.preview ?? images.noImage}
-					width={150}
-					height={150}
-					objectFit="contain"
-					alt="no image"
-				/>
-			</Stack>
-			<FormControl fullWidth margin="normal">
+		<>
+			<div className="tw-overflow-x-auto tw-relative tw-shadow-md tw-rounded-lg">
+				<table className="tw-w-full tw-text-sm tw-text-left tw-text-gray-500">
+					<thead className="tw-text-xs tw-text-neutral-500 tw-uppercase tw-bg-gray-300">
+						<tr>
+							<th scope="col" className="tw-py-3 tw-px-6">
+								Photo
+							</th>
+							<th scope="col" className="tw-py-3 tw-px-6">
+								Name
+							</th>
+							<th scope="col" className="tw-py-3 tw-px-6">
+								Type
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{data.map((item) => (
+							<tr key={item.name} className="tw-bg-white tw-border-b hover:tw-bg-gray-50">
+								<th className="tw-py-4 tw-px-6">
+									<div className="tw-mr-3">
+										<Image
+											className="tw-rounded-md tw-align-top"
+											src={item.photo ?? images.noImage}
+											width={60}
+											height={60}
+											alt={item.name}
+										/>
+									</div>
+								</th>
+								<td className="tw-py-4 tw-px-6">{item.name}</td>
+								<td className="tw-py-4 tw-px-6">{item.type}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+			{/* <FormControl fullWidth margin="normal">
 				<TextField
 					id="slider-alt"
 					required
@@ -81,6 +88,6 @@ export function SliderList() {
 				/>
 			</FormControl>
 			<FormControlLabel control={<Checkbox defaultChecked />} label="Active" /> */}
-		</TableContainer>
+		</>
 	);
 }

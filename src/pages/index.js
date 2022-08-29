@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import {
 	CssBaseline,
@@ -8,13 +8,10 @@ import {
 	Paper,
 	Typography,
 	Stack,
-	TextField,
 	FormControl,
 	InputLabel,
 	Select,
 	MenuItem,
-	Checkbox,
-	FormControlLabel,
 	Button,
 	Snackbar,
 	Alert,
@@ -22,7 +19,7 @@ import {
 } from '@mui/material';
 import { Clear, Save, AddPhotoAlternate } from '@mui/icons-material';
 import images from '~/assets/images';
-import { SliderList } from '~/components/Slider';
+import { SliderList, SliderPreview } from '~/components/Slider';
 
 const buttonStyle = {
 	fontWeight: '500',
@@ -31,23 +28,57 @@ const buttonStyle = {
 };
 
 export default function Home() {
-	const [photo, setPhoto] = useState('');
+	const [photos, setPhotos] = useState([]);
 	const [type, setType] = useState('');
-	const [alt, setAlt] = useState('');
-	const [link, setLink] = useState('');
 	const [errorText, setErrorText] = useState('');
 	const [errorField, setErrorField] = useState('');
 	const [openSnackBar, setOpenSnackBar] = useState(false);
+	const typesPhoto = useMemo(
+		() => [
+			{
+				id: 'full',
+				title: 'Full'
+			},
+			{
+				id: 'advertise',
+				title: 'Advertise'
+			},
+			{
+				id: 'factory',
+				title: 'Factory'
+			},
+			{
+				id: 'partner',
+				title: 'Partner'
+			}
+		],
+		[]
+	);
 
 	useEffect(() => {
-		return () => URL.revokeObjectURL(photo.preview);
-	}, [photo.preview]);
+		return () => {
+			if (photos.length) {
+				photos.forEach((photo) => URL.revokeObjectURL(photo.preview));
+			}
+		};
+	}, [photos]);
 
 	const handleChangePhoto = (e) => {
-		const file = e.target.files[0];
-		file.preview = URL.createObjectURL(file);
-		console.log(file.preview);
-		setPhoto(file);
+		const { files } = e.target;
+		let photos = [];
+
+		if (files.length) {
+			for (const key in files) {
+				if (files.hasOwnProperty(key)) {
+					const file = files[key];
+					file.preview = URL.createObjectURL(file);
+					console.log(file.preview);
+					photos.push(file);
+				}
+			}
+
+			setPhotos(photos);
+		}
 	};
 
 	const handleChangeType = (e) => {
@@ -55,40 +86,23 @@ export default function Home() {
 		setType(value);
 	};
 
-	const handleChangeInput = (e, type) => {
-		const value = e.target.value;
-
-		if (type === 'alt') {
-			setAlt(value);
-		} else if (type === 'link') {
-			setLink(value);
-		} else {
-			return;
-		}
+	const handleDeletePhoto = (item) => {
+		const newPhotos = photos.filter((photo) => photo.name !== item.name);
+		setPhotos(newPhotos);
 	};
 
 	const handleSave = () => {
-		if (photo === '') {
+		if (photos.length === 0) {
 			setErrorText('Please choose a photo');
 			setOpenSnackBar(true);
 		} else if (type === '') {
 			setErrorField('type');
 			setErrorText('Please choose a type');
 			setOpenSnackBar(true);
-		} else if (alt === '') {
-			setErrorField('alt');
-			setErrorText('Please enter an alt');
-			setOpenSnackBar(true);
-		} else if (link === '') {
-			setErrorField('link');
-			setErrorText('Please enter a link');
-			setOpenSnackBar(true);
 		} else {
 			const data = {
-				photo,
-				type,
-				alt,
-				link
+				photos,
+				type
 			};
 
 			console.log(data);
@@ -96,10 +110,8 @@ export default function Home() {
 	};
 
 	const handleClear = () => {
-		setPhoto('');
+		setPhotos([]);
 		setType('');
-		setAlt('');
-		setLink('');
 		setErrorText('');
 		setErrorField('');
 		setOpenSnackBar(false);
@@ -115,7 +127,7 @@ export default function Home() {
 		<>
 			<CssBaseline />
 			<AppBar
-				position="absolute"
+				position="relative"
 				color="default"
 				elevation={0}
 				sx={{
@@ -123,7 +135,6 @@ export default function Home() {
 						md: 'flex-start',
 						xs: 'center'
 					},
-					position: 'relative',
 					borderBottom: (theme) => `1px solid ${theme.palette.divider}`
 				}}
 			>
@@ -131,20 +142,9 @@ export default function Home() {
 					<Image src={images.logo} alt="Thực Phẩm Tuấn Đạt" />
 				</Toolbar>
 			</AppBar>
-			<Container component="main" maxWidth="lg">
+			<Container component="main" maxWidth="sm">
 				<Paper variant="outlined" sx={{ mt: 4, mb: 3, p: 3 }}>
-					<Typography
-						component="h2"
-						align="left"
-						marginBottom={4}
-						sx={{
-							typography: {
-								md: 'h4',
-								xs: 'h5'
-							},
-							marginBottom: 2
-						}}
-					>
+					<Typography component="h1" variant="h5" align="left" marginBottom={2}>
 						Slider
 					</Typography>
 
@@ -158,7 +158,7 @@ export default function Home() {
 							sx={buttonStyle}
 						>
 							<Typography variant="inherit">Choose a photo</Typography>
-							<input type="file" hidden accept="image/*" onChange={handleChangePhoto} />
+							<input type="file" hidden multiple accept="image/*" onChange={handleChangePhoto} />
 						</Button>
 						<FormControl sx={{ minWidth: 100 }}>
 							<InputLabel
@@ -179,20 +179,25 @@ export default function Home() {
 								error={errorField === 'type' && !type ? true : false}
 								onChange={handleChangeType}
 							>
-								<MenuItem value="full">Full</MenuItem>
-								<MenuItem value="advertise">Advertise</MenuItem>
-								<MenuItem value="factory">Factory</MenuItem>
-								<MenuItem value="partner">Partner</MenuItem>
+								{typesPhoto.map((type) => (
+									<MenuItem key={type.id} value={type.id}>
+										{type.title}
+									</MenuItem>
+								))}
 							</Select>
 						</FormControl>
 					</Stack>
 
-					<Box marginBottom={3}>
-						<SliderList />
-					</Box>
+					<SliderPreview data={photos} onDelete={handleDeletePhoto} />
 
-					<Stack direction="row" justifyContent="center" spacing={1}>
+					<Stack
+						direction="row"
+						justifyContent="center"
+						spacing={1}
+						sx={{ paddingTop: 2, borderTop: (theme) => `1px solid ${theme.palette.divider}` }}
+					>
 						<Button
+							disabled={photos.length === 0}
 							color="primary"
 							variant="contained"
 							startIcon={<Save />}
@@ -201,7 +206,9 @@ export default function Home() {
 						>
 							<Typography variant="inherit">Save</Typography>
 						</Button>
+
 						<Button
+							disabled={photos.length === 0}
 							color="secondary"
 							variant="contained"
 							startIcon={<Clear />}
@@ -212,6 +219,11 @@ export default function Home() {
 						</Button>
 					</Stack>
 				</Paper>
+
+				<Box marginBottom={2}>
+					<SliderList />
+				</Box>
+
 				<Typography variant="body2" color="text.secondary" align="center" paddingY={3}>
 					Tuấn Đạt © {new Date().getFullYear()}. Powered by Thực Phẩm Tuấn Đạt.
 				</Typography>
