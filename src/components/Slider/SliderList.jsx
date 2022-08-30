@@ -55,6 +55,7 @@ function SliderList() {
 											width={70}
 											height={70}
 											alt={item.name}
+											loading="lazy"
 											data-fancybox="SliderList"
 											data-src={item.photo ?? images.noImage}
 										/>

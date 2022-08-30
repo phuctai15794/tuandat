@@ -19,6 +19,7 @@ function SliderPreview({ data = [], onDelete }) {
 										width={60}
 										height={60}
 										alt={item.name}
+										loading="lazy"
 										data-fancybox="SliderPreviewAvatar"
 										data-src={item.preview ?? images.noImage}
 									/>

@@ -18,6 +18,7 @@ import {
 	Box
 } from '@mui/material';
 import { Clear, Save, AddPhotoAlternate } from '@mui/icons-material';
+import { getPreSignURL } from '~/api-client';
 import images from '~/assets/images';
 import { SliderList, SliderPreview } from '~/components/Slider';
 
@@ -63,7 +64,7 @@ export default function Home() {
 		};
 	}, [photos]);
 
-	const handleChangePhoto = (e) => {
+	const handleChangeFile = (e) => {
 		const { files } = e.target;
 		let photos = [];
 
@@ -107,7 +108,28 @@ export default function Home() {
 				type
 			};
 
-			console.log(data);
+			Promise.all(
+				photos.map((photo) =>
+					getPreSignURL({
+						file_name: photo.name,
+						content_type: photo.type
+					})
+				)
+			)
+				.then(function (responses) {
+					console.log('Responses:', responses);
+					return Promise.all(
+						responses.map(function (response) {
+							return response.json();
+						})
+					);
+				})
+				.then(function (data) {
+					console.log('Data:', data);
+				})
+				.catch(function (error) {
+					console.log('Error:', error);
+				});
 		}
 	};
 
@@ -160,7 +182,7 @@ export default function Home() {
 							sx={buttonStyle}
 						>
 							<Typography variant="inherit">Choose a photo</Typography>
-							<input type="file" hidden multiple accept="image/*" onChange={handleChangePhoto} />
+							<input type="file" hidden multiple accept="image/*" onChange={handleChangeFile} />
 						</Button>
 						<FormControl sx={{ minWidth: 100 }}>
 							<InputLabel
