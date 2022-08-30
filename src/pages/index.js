@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import Image from 'next/image';
+import Image from 'next/future/image';
 import {
 	CssBaseline,
 	AppBar,

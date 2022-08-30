@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import Image from 'next/image';
+import Image from 'next/future/image';
 import images from '~/assets/images';
 
 const SliderList = () => {
@@ -32,13 +32,13 @@ const SliderList = () => {
 				<table className="tw-w-full tw-text-sm tw-text-left tw-text-gray-500">
 					<thead className="tw-text-xs tw-text-neutral-500 tw-uppercase tw-bg-gray-300">
 						<tr>
-							<th scope="col" className="tw-py-3 tw-px-6">
+							<th scope="col" className="tw-py-3 tw-px-4">
 								Photo
 							</th>
-							<th scope="col" className="tw-py-3 tw-px-6">
+							<th scope="col" className="tw-py-3 tw-px-4">
 								Name
 							</th>
-							<th scope="col" className="tw-py-3 tw-px-6">
+							<th scope="col" className="tw-py-3 tw-px-4 tw-text-center">
 								Type
 							</th>
 						</tr>
@@ -46,19 +46,17 @@ const SliderList = () => {
 					<tbody>
 						{data.map((item) => (
 							<tr key={item.name} className="tw-bg-white tw-border-b hover:tw-bg-gray-50">
-								<th className="tw-py-4 tw-px-6">
-									<div className="tw-mr-3">
-										<Image
-											className="tw-rounded-md tw-align-top"
-											src={item.photo ?? images.noImage}
-											width={60}
-											height={60}
-											alt={item.name}
-										/>
-									</div>
+								<th className="tw-py-3 tw-px-4 tw-text-center">
+									<Image
+										className="tw-bg-slate-100 tw-border tw-border-solid tw-border-neutral-300 tw-p-1 tw-rounded-md tw-align-top"
+										src={item.photo ?? images.noImage}
+										width={70}
+										height={70}
+										alt={item.name}
+									/>
 								</th>
-								<td className="tw-py-4 tw-px-6">{item.name}</td>
-								<td className="tw-py-4 tw-px-6">{item.type}</td>
+								<td className="tw-py-3 tw-px-4">{item.name}</td>
+								<td className="tw-py-3 tw-px-4 tw-text-center">{item.type}</td>
 							</tr>
 						))}
 					</tbody>
