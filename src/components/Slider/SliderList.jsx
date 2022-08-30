@@ -1,8 +1,9 @@
 import { memo } from 'react';
 import Image from 'next/future/image';
+import { Fancybox } from '~/components/Fancybox';
 import images from '~/assets/images';
 
-const SliderList = () => {
+function SliderList() {
 	const data = [
 		{
 			photo: 'https://i.picsum.photos/id/244/70/70.jpg?hmac=YlvDLXFCAXsq4GspcIdX3jodn6ysMue46rQYIoSZKdc',
@@ -47,13 +48,17 @@ const SliderList = () => {
 						{data.map((item) => (
 							<tr key={item.name} className="tw-bg-white tw-border-b hover:tw-bg-gray-50">
 								<th className="tw-py-3 tw-px-4 tw-text-center">
-									<Image
-										className="tw-bg-slate-100 tw-border tw-border-solid tw-border-neutral-300 tw-p-1 tw-rounded-md tw-align-top"
-										src={item.photo ?? images.noImage}
-										width={70}
-										height={70}
-										alt={item.name}
-									/>
+									<Fancybox options={{ infinite: false }}>
+										<Image
+											className="tw-bg-slate-100 tw-border tw-border-solid tw-border-neutral-300 tw-p-1 tw-rounded-md tw-align-top"
+											src={item.photo ?? images.noImage}
+											width={70}
+											height={70}
+											alt={item.name}
+											data-fancybox="SliderList"
+											data-src={item.photo ?? images.noImage}
+										/>
+									</Fancybox>
 								</th>
 								<td className="tw-py-3 tw-px-4">{item.name}</td>
 								<td className="tw-py-3 tw-px-4 tw-text-center">{item.type}</td>
@@ -89,6 +94,6 @@ const SliderList = () => {
 			<FormControlLabel control={<Checkbox defaultChecked />} label="Active" /> */}
 		</>
 	);
-};
+}
 
 export default memo(SliderList);
