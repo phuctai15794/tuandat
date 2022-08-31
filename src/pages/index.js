@@ -18,7 +18,7 @@ import {
 	Box
 } from '@mui/material';
 import { Clear, Save, AddPhotoAlternate } from '@mui/icons-material';
-import { getPreSign, uploadImage } from '~/api-client';
+import { getPreSignURL, uploadImage } from '~/api-client';
 import images from '~/assets/images';
 import { SliderList, SliderPreview } from '~/components/Slider';
 
@@ -104,42 +104,35 @@ export default function Home() {
 			setErrorText('Please choose a type');
 			setOpenSnackBar(true);
 		} else {
+			console.log(photos);
+
 			Promise.all(
 				photos.map((photo) =>
-					getPreSign({
+					getPreSignURL({
 						file_name: photo.name,
 						content_type: photo.type
 					})
 				)
 			)
 				.then(function (data) {
-					const presignURLs =
-						(data &&
-							data.map((item) => {
-								let presignURL = item.data.presign_url;
-								// return presignURL
-								// 	.replaceAll('\u0026', '&')
-								// 	.replaceAll(/%2F/gi, '/')
-								// 	.replaceAll('%3B', ';');
-								return presignURL;
-							})) ||
-						null;
+					const presignURLs = (data && data.map((item) => decodeURIComponent(item.data.presign_url))) || null;
 
 					if (presignURLs) {
 						Promise.all(
 							photos.map((photo, index) => {
-								const formData = new FormData();
-								formData.append('file', photo);
-								formData.append('Content-Type', photo.type);
-								uploadImage(presignURLs[index], formData, {
+								// const formData = new FormData();
+								// formData.append('file', photo);
+								// formData.append('Content-Type', photo.type);
+								uploadImage(presignURLs[index], photo, {
 									headers: {
-										'Content-Type': photo.type
+										// 'Content-Type': photo.type,
+										'X-Amz-Acl': 'public-read'
 									}
 								});
 							})
 						)
 							.then(function (data) {
-								console.log(data);
+								console.log('Result:', data);
 							})
 							.catch(function (error) {
 								console.log('Error upload image:', error);
