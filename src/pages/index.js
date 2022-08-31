@@ -18,7 +18,8 @@ import {
 	Box
 } from '@mui/material';
 import { Clear, Save, AddPhotoAlternate } from '@mui/icons-material';
-import { getPreSignURL, uploadImage } from '~/api-client';
+import { createPreSignedURL, uploadByPreSignedURL, uploadPhoto, getPhotos } from '~/api-client';
+import config from '~/config';
 import images from '~/assets/images';
 import { SliderList, SliderPreview } from '~/components/Slider';
 
@@ -29,29 +30,11 @@ const buttonStyle = {
 };
 
 export default function Home() {
-	const typesPhoto = useMemo(
-		() => [
-			{
-				id: 'full',
-				title: 'Full'
-			},
-			{
-				id: 'advertise',
-				title: 'Advertise'
-			},
-			{
-				id: 'factory',
-				title: 'Factory'
-			},
-			{
-				id: 'partner',
-				title: 'Partner'
-			}
-		],
-		[]
-	);
-	const defaultType = typesPhoto[0].id || '';
-	const [photos, setPhotos] = useState([]);
+	const sliderTypes = useMemo(() => config.sliderTypes, []);
+	const defaultType = sliderTypes[0].id || '';
+
+	const [photoInputs, setPhotoInputs] = useState([]);
+	const [photoList, setPhotoList] = useState([]);
 	const [type, setType] = useState(defaultType);
 	const [errorText, setErrorText] = useState('');
 	const [errorField, setErrorField] = useState('');
@@ -59,26 +42,33 @@ export default function Home() {
 
 	useEffect(() => {
 		return () => {
-			if (photos.length) {
-				photos.forEach((photo) => URL.revokeObjectURL(photo.preview));
+			if (photoInputs.length) {
+				photoInputs.forEach((photo) => URL.revokeObjectURL(photo.preview));
 			}
 		};
-	}, [photos]);
+	}, [photoInputs]);
+
+	useEffect(() => {
+		(async () => {
+			const response = await getPhotos();
+			setPhotoList(response.data);
+		})();
+	}, []);
 
 	const handleChangeFile = (e) => {
 		const { files } = e.target;
-		let photos = [];
+		let photosData = [];
 
 		if (files.length) {
 			for (const key in files) {
 				if (files.hasOwnProperty(key)) {
 					const file = files[key];
 					file.preview = URL.createObjectURL(file);
-					photos.push(file);
+					photosData.push(file);
 				}
 			}
 
-			setPhotos(photos);
+			setPhotoInputs(photosData);
 		}
 	};
 
@@ -89,14 +79,14 @@ export default function Home() {
 
 	const handleDeletePhoto = useCallback(
 		(item) => {
-			const newPhotos = photos.filter((photo) => photo.name !== item.name);
-			setPhotos(newPhotos);
+			const newPhotos = photoInputs.filter((photo) => photo.name !== item.name);
+			setPhotoInputs(newPhotos);
 		},
-		[photos]
+		[photoInputs]
 	);
 
 	const handleSave = () => {
-		if (photos.length === 0) {
+		if (photoInputs.length === 0) {
 			setErrorText('Please choose a photo');
 			setOpenSnackBar(true);
 		} else if (type === '') {
@@ -104,11 +94,9 @@ export default function Home() {
 			setErrorText('Please choose a type');
 			setOpenSnackBar(true);
 		} else {
-			console.log(photos);
-
 			Promise.all(
-				photos.map((photo) =>
-					getPreSignURL({
+				photoInputs.map((photo) =>
+					createPreSignedURL({
 						file_name: photo.name,
 						content_type: photo.type
 					})
@@ -118,35 +106,56 @@ export default function Home() {
 					const presignURLs = (data && data.map((item) => decodeURIComponent(item.data.presign_url))) || null;
 
 					if (presignURLs) {
-						Promise.all(
-							photos.map((photo, index) => {
-								// const formData = new FormData();
-								// formData.append('file', photo);
-								// formData.append('Content-Type', photo.type);
-								uploadImage(presignURLs[index], photo, {
+						return Promise.all(
+							photoInputs.map((photo, index) => {
+								const presignURL = presignURLs[index];
+
+								return uploadByPreSignedURL(presignURL, photo, {
 									headers: {
-										// 'Content-Type': photo.type,
+										'Content-type': photo.type,
 										'X-Amz-Acl': 'public-read'
 									}
 								});
 							})
 						)
 							.then(function (data) {
-								console.log('Result:', data);
+								return Promise.all(
+									data.map((item, index) => {
+										const presignURL = presignURLs[index];
+
+										if (item.status === 200) {
+											const imagePath = presignURL.split('?')[0] || '';
+
+											if (imagePath !== '') {
+												return uploadPhoto({
+													image_url: imagePath,
+													position: type
+												});
+											}
+										}
+									})
+								);
 							})
 							.catch(function (error) {
-								console.log('Error upload image:', error);
+								console.log('Error Upload By PreSigned URL:', error);
 							});
 					}
 				})
+				.then(async function (data) {
+					if (data) {
+						const photos = await getPhotos();
+						setPhotoList(photos);
+						handleClear();
+					}
+				})
 				.catch(function (error) {
-					console.log('Error get presign:', error);
+					console.log('Error Get PreSigned URL:', error);
 				});
 		}
 	};
 
 	const handleClear = () => {
-		setPhotos([]);
+		setPhotoInputs([]);
 		setType('');
 		setErrorText('');
 		setErrorField('');
@@ -215,7 +224,7 @@ export default function Home() {
 								error={errorField === 'type' && !type ? true : false}
 								onChange={handleChangeType}
 							>
-								{typesPhoto.map((type) => (
+								{sliderTypes.map((type) => (
 									<MenuItem key={type.id} value={type.id}>
 										{type.title}
 									</MenuItem>
@@ -224,7 +233,7 @@ export default function Home() {
 						</FormControl>
 					</Stack>
 
-					<SliderPreview data={photos} onDelete={handleDeletePhoto} />
+					<SliderPreview data={photoInputs} onDelete={handleDeletePhoto} />
 
 					<Stack
 						direction="row"
@@ -233,7 +242,7 @@ export default function Home() {
 						sx={{ paddingTop: 2, borderTop: (theme) => `1px solid ${theme.palette.divider}` }}
 					>
 						<Button
-							disabled={photos.length === 0}
+							disabled={photoInputs.length === 0}
 							color="primary"
 							variant="contained"
 							startIcon={<Save />}
@@ -244,7 +253,7 @@ export default function Home() {
 						</Button>
 
 						<Button
-							disabled={photos.length === 0}
+							disabled={photoInputs.length === 0}
 							color="secondary"
 							variant="contained"
 							startIcon={<Clear />}
@@ -257,7 +266,7 @@ export default function Home() {
 				</Paper>
 
 				<Box marginBottom={2}>
-					<SliderList />
+					<SliderList data={photoList} />
 				</Box>
 
 				<Typography variant="body2" color="text.secondary" align="center" paddingY={3}>

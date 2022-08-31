@@ -9,7 +9,7 @@ const nextConfig = {
 		}
 	},
 	images: {
-		domains: ['picsum.photos', 'i.picsum.photos']
+		domains: ['chebiennongsan.s3.ap-southeast-1.amazonaws.com']
 	}
 };
 
