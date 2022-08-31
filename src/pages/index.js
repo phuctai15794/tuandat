@@ -18,7 +18,7 @@ import {
 	Box
 } from '@mui/material';
 import { Clear, Save, AddPhotoAlternate } from '@mui/icons-material';
-import { getPreSignURL } from '~/api-client';
+import { getPreSign, uploadImage } from '~/api-client';
 import images from '~/assets/images';
 import { SliderList, SliderPreview } from '~/components/Slider';
 
@@ -106,27 +106,48 @@ export default function Home() {
 		} else {
 			Promise.all(
 				photos.map((photo) =>
-					getPreSignURL({
+					getPreSign({
 						file_name: photo.name,
 						content_type: photo.type
 					})
 				)
 			)
-				// .then(function (responses) { // Case for origin Fetch
-				// 	console.log('Responses:', responses);
-				// 	return Promise.all(
-				// 		responses.map(function (response) {
-				// 			return response.json();
-				// 		})
-				// 	);
-				// })
 				.then(function (data) {
-					if (data.length) {
-						data.map((item, index) => console.log(`Presign ${index}: ${item.data.presign_url}`));
+					const presignURLs =
+						(data &&
+							data.map((item) => {
+								let presignURL = item.data.presign_url;
+								// return presignURL
+								// 	.replaceAll('\u0026', '&')
+								// 	.replaceAll(/%2F/gi, '/')
+								// 	.replaceAll('%3B', ';');
+								return presignURL;
+							})) ||
+						null;
+
+					if (presignURLs) {
+						Promise.all(
+							photos.map((photo, index) => {
+								const formData = new FormData();
+								formData.append('file', photo);
+								formData.append('Content-Type', photo.type);
+								uploadImage(presignURLs[index], formData, {
+									headers: {
+										'Content-Type': photo.type
+									}
+								});
+							})
+						)
+							.then(function (data) {
+								console.log(data);
+							})
+							.catch(function (error) {
+								console.log('Error upload image:', error);
+							});
 					}
 				})
 				.catch(function (error) {
-					console.log('Error:', error);
+					console.log('Error get presign:', error);
 				});
 		}
 	};
@@ -161,7 +182,7 @@ export default function Home() {
 				}}
 			>
 				<Toolbar>
-					<Image src={images.logo} alt="Thực Phẩm Tuấn Đạt" />
+					<Image src={images.logo} priority alt="Thực Phẩm Tuấn Đạt" />
 				</Toolbar>
 			</AppBar>
 			<Container component="main" maxWidth="sm">

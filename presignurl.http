@@ -1,1 +1,0 @@
-curl -X POST -H 'Content-Type: application/json' --data '{"file_name":"beautiful_angry_lion-wallpaper-1920x1080.jpg", "content_type": "image/jpeg"}' https://cbns.giang.fyi/images/presign

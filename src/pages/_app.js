@@ -4,7 +4,9 @@ import '../styles/globals.scss';
 function MyApp({ Component, pageProps }) {
 	return (
 		<>
-			<Head>Chế Biến Nông Sản</Head>
+			<Head>
+				<title>Chế Biến Nông Sản</title>
+			</Head>
 			<Component {...pageProps} />
 		</>
 	);

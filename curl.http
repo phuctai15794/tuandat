@@ -1,0 +1,7 @@
+### Create PreSigned-URL
+
+curl -X POST -H 'Content-Type: application/json' --data '{"file_name":"beautiful_angry_lion-wallpaper-1920x1080.jpg", "content_type": "image/jpeg"}' https://cbns.giang.fyi/images/presign
+
+### Upload File
+
+curl -i -X PUT -H "Content-Type: image/jpeg" -H "X-Amz-Acl: public-read" --data-binary @/Users/nina2020-cus/Desktop/test.jpg "https://chebiennongsan.s3.ap-southeast-1.amazonaws.com/alonso-reyes-tyD-qFW1D1g-unsplash.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA4HBVCU6PKXY4E3S4/20220831/ap-southeast-1/s3/aws4_request&X-Amz-Date=20220831T060253Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host;x-amz-acl&x-id=PutObject&X-Amz-Signature=ad392c1b2d083c384f04844b164ad52403fb5d4f110b5bf979daf281fa1f38fa"

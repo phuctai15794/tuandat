@@ -1,7 +1,7 @@
 import axiosClient from './axiosClient';
 
-const getPreSignURL = async (data) => {
-	return await axiosClient.post('https://cbns.giang.fyi/images/presign', data);
+const uploadImage = async (url, data, options) => {
+	return await axiosClient.put(url, data, options);
 };
 
-export { getPreSignURL };
+export { uploadImage };
