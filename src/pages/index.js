@@ -29,11 +29,6 @@ const buttonStyle = {
 };
 
 export default function Home() {
-	const [photos, setPhotos] = useState([]);
-	const [type, setType] = useState('');
-	const [errorText, setErrorText] = useState('');
-	const [errorField, setErrorField] = useState('');
-	const [openSnackBar, setOpenSnackBar] = useState(false);
 	const typesPhoto = useMemo(
 		() => [
 			{
@@ -55,6 +50,12 @@ export default function Home() {
 		],
 		[]
 	);
+	const defaultType = typesPhoto[0].id || '';
+	const [photos, setPhotos] = useState([]);
+	const [type, setType] = useState(defaultType);
+	const [errorText, setErrorText] = useState('');
+	const [errorField, setErrorField] = useState('');
+	const [openSnackBar, setOpenSnackBar] = useState(false);
 
 	useEffect(() => {
 		return () => {
@@ -103,11 +104,6 @@ export default function Home() {
 			setErrorText('Please choose a type');
 			setOpenSnackBar(true);
 		} else {
-			const data = {
-				photos,
-				type
-			};
-
 			Promise.all(
 				photos.map((photo) =>
 					getPreSignURL({
@@ -116,16 +112,18 @@ export default function Home() {
 					})
 				)
 			)
-				.then(function (responses) {
-					console.log('Responses:', responses);
-					return Promise.all(
-						responses.map(function (response) {
-							return response.json();
-						})
-					);
-				})
+				// .then(function (responses) { // Case for origin Fetch
+				// 	console.log('Responses:', responses);
+				// 	return Promise.all(
+				// 		responses.map(function (response) {
+				// 			return response.json();
+				// 		})
+				// 	);
+				// })
 				.then(function (data) {
-					console.log('Data:', data);
+					if (data.length) {
+						data.map((item, index) => console.log(`Presign ${index}: ${item.data.presign_url}`));
+					}
 				})
 				.catch(function (error) {
 					console.log('Error:', error);
