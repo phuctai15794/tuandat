@@ -30,7 +30,7 @@ const buttonStyle = {
 };
 
 export default function Home() {
-	const sliderTypes = useMemo(() => config.sliderTypes, []);
+	const sliderTypes = useMemo(() => config.slider.positions, []);
 	const defaultType = sliderTypes[0].id || '';
 
 	const [photoInputs, setPhotoInputs] = useState([]);
@@ -62,17 +62,53 @@ export default function Home() {
 	const handleChangeFile = (e) => {
 		const { files } = e.target;
 		let photosData = [];
+		let photosExceedSize = [];
+		let photosInvalidExt = [];
+		let message = [];
+		let isError = false;
+		const filesLength = (files && files.length) || 0;
 
-		if (files.length) {
-			for (const key in files) {
-				if (files.hasOwnProperty(key)) {
-					const file = files[key];
-					file.preview = URL.createObjectURL(file);
-					photosData.push(file);
-				}
+		if (filesLength) {
+			if (filesLength > config.slider.limit.max) {
+				isError = true;
+				message.push(`Max only ${config.slider.limit.max} files are allowed`);
 			}
 
-			setPhotoInputs(photosData);
+			Object.entries(files)
+				.slice(0, config.slider.limit.max)
+				.map((item) => {
+					const [, file] = item;
+					const fileSize = file.size / 1024 / 1024;
+					const fileExt = file.name.split('.').pop();
+
+					if (!config.slider.extensions.includes(fileExt)) {
+						photosInvalidExt.push(file);
+					} else if (fileSize > config.slider.limit.size) {
+						photosExceedSize.push(file);
+					} else {
+						file.preview = URL.createObjectURL(file);
+						photosData.push(file);
+					}
+				});
+
+			if (photosInvalidExt.length) {
+				isError = true;
+				message.push(`Some files is invalid (Allow: ${config.slider.extensions.join(', ')})`);
+			}
+
+			if (photosExceedSize.length) {
+				isError = true;
+				message.push(`Some files exceed the allowable size (Allow: ${config.slider.limit.size} MB)`);
+			}
+
+			if (isError) {
+				setOpenSnackBar(isError);
+				setErrorText(message.join('\r\n'));
+			}
+
+			if (photosData.length) {
+				setPhotoInputs(photosData);
+			}
 		}
 	};
 
@@ -89,9 +125,9 @@ export default function Home() {
 		[photoInputs]
 	);
 
-	const handleDeletePhoto = useCallback((id) => {
+	const handleDeletePhoto = useCallback(async (id) => {
 		if (id) {
-			detelePhoto(id);
+			await detelePhoto(id);
 			setIsFetch(true);
 		}
 	}, []);
@@ -203,7 +239,7 @@ export default function Home() {
 						Slider
 					</Typography>
 
-					<Stack direction="row" alignItems="center" spacing={2} marginBottom={2}>
+					<Stack direction="row" flexWrap={'wrap'} alignItems="center" spacing={2} marginBottom={2}>
 						<Button
 							fullWidth={false}
 							variant="contained"
@@ -241,6 +277,19 @@ export default function Home() {
 								))}
 							</Select>
 						</FormControl>
+						<Typography
+							variant="caption"
+							color="primary"
+							sx={{
+								fontWeight: 700,
+								width: '100%',
+								ml: '0px !important',
+								mt: '0.5rem !important'
+							}}
+						>
+							Up to {config.slider.limit.max} images, max {config.slider.limit.size} MB each (
+							{`Allow: ${config.slider.extensions.join(', ')}`})
+						</Typography>
 					</Stack>
 
 					<SliderPreview data={photoInputs} onDelete={handleDeletePhotoInput} />
@@ -292,7 +341,14 @@ export default function Home() {
 				onClose={handleCloseSnackBar}
 				autoHideDuration={3000}
 			>
-				<Alert severity="error">{errorText}</Alert>
+				<Alert
+					severity="error"
+					sx={{
+						whiteSpace: 'pre'
+					}}
+				>
+					{errorText}
+				</Alert>
 			</Snackbar>
 		</>
 	);

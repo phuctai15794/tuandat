@@ -1,7 +1,7 @@
-import sliderTypes from './sliderTypes';
+import slider from './slider';
 
 const config = {
-	sliderTypes
+	slider
 };
 
 export default config;

@@ -1,7 +1,7 @@
 import axiosClient from './axiosClient';
 
 const createPreSignedURL = async (data) => {
-	return await axiosClient.post('https://cbns.giang.fyi/images/presign', data);
+	return await axiosClient.post('/images/presign', data);
 };
 
 const uploadByPreSignedURL = async (url, data, options) => {
@@ -9,15 +9,15 @@ const uploadByPreSignedURL = async (url, data, options) => {
 };
 
 const uploadPhoto = async (data) => {
-	return await axiosClient.post('https://cbns.giang.fyi/sliders', data);
+	return await axiosClient.post('/sliders', data);
 };
 
 const getPhotos = async () => {
-	return await axiosClient.get('https://cbns.giang.fyi/storefront/sliders');
+	return await axiosClient.get('/storefront/sliders');
 };
 
 const detelePhoto = async (id) => {
-	return await axiosClient.delete(`https://cbns.giang.fyi/sliders/${id}`);
+	return await axiosClient.delete(`/sliders/${id}`);
 };
 
 export { createPreSignedURL, uploadByPreSignedURL, uploadPhoto, getPhotos, detelePhoto };

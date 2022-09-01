@@ -6,7 +6,7 @@ import images from '~/assets/images';
 import { Fancybox } from '~/components/Fancybox';
 
 function SliderList({ data = [], onDelete }) {
-	const sliderTypes = useMemo(() => config.sliderTypes, []);
+	const sliderTypes = useMemo(() => config.slider.positions, []);
 
 	return (
 		<>
