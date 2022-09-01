@@ -8,7 +8,7 @@ function SliderPreview({ data = [], onDelete }) {
 	return (
 		<>
 			{data.length ? (
-				<ul className="tw-list-none tw-overflow-x-hidden tw-overflow-y-scroll tw-p-0 tw-pr-4 tw-max-h-96 custom-scrollbar">
+				<ul className="tw-list-none tw-overflow-x-hidden tw-overflow-y-scroll tw-max-h-96 tw-p-0 tw-pr-4 custom-scrollbar">
 					{data.map((item) => (
 						<li key={item.name} className="tw-flex tw-items-start tw-content-start tw-mb-3">
 							<div className="tw-mr-3">
@@ -30,7 +30,7 @@ function SliderPreview({ data = [], onDelete }) {
 								<div className="actions">
 									<div className="tw-inline-block">
 										<span
-											className="tw-flex tw-items-center tw-contents-start tw-cursor-pointer tw-text-red-500 hover:tw-text-red-700 tw-text-sm"
+											className="tw-flex tw-items-center tw-contents-start tw-cursor-pointer tw-text-red-600 hover:tw-text-red-800 tw-text-sm"
 											onClick={() => onDelete(item)}
 										>
 											<Delete fontSize="small" />
@@ -40,7 +40,7 @@ function SliderPreview({ data = [], onDelete }) {
 									<div className="tw-inline-block tw-ml-3">
 										<Fancybox options={{ infinite: false }}>
 											<span
-												className="tw-flex tw-items-center tw-contents-start tw-cursor-pointer tw-text-blue-500 hover:tw-text-blue-700 tw-text-sm"
+												className="tw-flex tw-items-center tw-contents-start tw-cursor-pointer tw-text-blue-600 hover:tw-text-blue-800 tw-text-sm"
 												data-fancybox="SliderPreviewSingle"
 												data-src={item.preview ?? images.noImage}
 											>

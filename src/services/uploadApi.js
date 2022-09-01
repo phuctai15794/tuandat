@@ -16,4 +16,8 @@ const getPhotos = async () => {
 	return await axiosClient.get('https://cbns.giang.fyi/storefront/sliders');
 };
 
-export { createPreSignedURL, uploadByPreSignedURL, uploadPhoto, getPhotos };
+const detelePhoto = async (id) => {
+	return await axiosClient.delete(`https://cbns.giang.fyi/sliders/${id}`);
+};
+
+export { createPreSignedURL, uploadByPreSignedURL, uploadPhoto, getPhotos, detelePhoto };

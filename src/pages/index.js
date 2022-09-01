@@ -18,7 +18,7 @@ import {
 	Box
 } from '@mui/material';
 import { Clear, Save, AddPhotoAlternate } from '@mui/icons-material';
-import { createPreSignedURL, uploadByPreSignedURL, uploadPhoto, getPhotos } from '~/api-client';
+import { createPreSignedURL, uploadByPreSignedURL, uploadPhoto, getPhotos, detelePhoto } from '~/services';
 import config from '~/config';
 import images from '~/assets/images';
 import { SliderList, SliderPreview } from '~/components/Slider';
@@ -35,6 +35,7 @@ export default function Home() {
 
 	const [photoInputs, setPhotoInputs] = useState([]);
 	const [photoList, setPhotoList] = useState([]);
+	const [isFetch, setIsFetch] = useState(true);
 	const [type, setType] = useState(defaultType);
 	const [errorText, setErrorText] = useState('');
 	const [errorField, setErrorField] = useState('');
@@ -49,11 +50,14 @@ export default function Home() {
 	}, [photoInputs]);
 
 	useEffect(() => {
-		(async () => {
-			const response = await getPhotos();
-			setPhotoList(response.data);
-		})();
-	}, []);
+		if (isFetch) {
+			(async () => {
+				const response = await getPhotos();
+				setPhotoList(response.data);
+				setIsFetch(false);
+			})();
+		}
+	}, [isFetch]);
 
 	const handleChangeFile = (e) => {
 		const { files } = e.target;
@@ -77,13 +81,20 @@ export default function Home() {
 		setType(value);
 	};
 
-	const handleDeletePhoto = useCallback(
+	const handleDeletePhotoInput = useCallback(
 		(item) => {
 			const newPhotos = photoInputs.filter((photo) => photo.name !== item.name);
 			setPhotoInputs(newPhotos);
 		},
 		[photoInputs]
 	);
+
+	const handleDeletePhoto = useCallback((id) => {
+		if (id) {
+			detelePhoto(id);
+			setIsFetch(true);
+		}
+	}, []);
 
 	const handleSave = () => {
 		if (photoInputs.length === 0) {
@@ -112,7 +123,7 @@ export default function Home() {
 
 								return uploadByPreSignedURL(presignURL, photo, {
 									headers: {
-										'Content-type': photo.type,
+										'Content-Type': photo.type,
 										'X-Amz-Acl': 'public-read'
 									}
 								});
@@ -143,8 +154,7 @@ export default function Home() {
 				})
 				.then(async function (data) {
 					if (data) {
-						const photos = await getPhotos();
-						setPhotoList(photos);
+						setIsFetch(true);
 						handleClear();
 					}
 				})
@@ -233,7 +243,7 @@ export default function Home() {
 						</FormControl>
 					</Stack>
 
-					<SliderPreview data={photoInputs} onDelete={handleDeletePhoto} />
+					<SliderPreview data={photoInputs} onDelete={handleDeletePhotoInput} />
 
 					<Stack
 						direction="row"
@@ -266,7 +276,7 @@ export default function Home() {
 				</Paper>
 
 				<Box marginBottom={2}>
-					<SliderList data={photoList} />
+					<SliderList data={photoList} onDelete={handleDeletePhoto} />
 				</Box>
 
 				<Typography variant="body2" color="text.secondary" align="center" paddingY={3}>
