@@ -1,7 +1,7 @@
 const slider = {
 	limit: {
 		max: 8,
-		size: 3
+		size: 5
 	},
 	extensions: ['jpg', 'png', 'jpeg'],
 	positions: [
