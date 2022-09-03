@@ -10,11 +10,14 @@
         "beautiful": "prettier --print-width 120 --use-tabs --single-quote --tab-width 4 --trailing-comma none --write \"src/**/*.{jsx,js,json,scss}\""
     },
     "dependencies": {
-        "@emotion/react": "^11.10.0",
-        "@emotion/styled": "^11.10.0",
+        "@emotion/cache": "^11.10.3",
+        "@emotion/react": "^11.10.4",
+        "@emotion/server": "^11.10.0",
+        "@emotion/styled": "^11.10.4",
+        "@mui/icons-material": "^5.10.3",
+        "@mui/material": "^5.10.3",
         "@fancyapps/ui": "^4.0.31",
-        "@mui/icons-material": "^5.10.2",
-        "@mui/material": "^5.10.2",
+        "prop-types": "^15.8.1",
         "axios": "^0.27.2",
         "next": "12.2.5",
         "next-transpile-modules": "^9.0.0",

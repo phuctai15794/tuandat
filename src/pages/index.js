@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import Image from 'next/future/image';
 import {
-	CssBaseline,
 	AppBar,
 	Container,
 	Toolbar,
@@ -216,7 +215,6 @@ export default function Home() {
 
 	return (
 		<>
-			<CssBaseline />
 			<AppBar
 				position="relative"
 				color="default"
