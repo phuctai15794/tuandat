@@ -1,12 +1,28 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import Image from 'next/future/image';
+import PropTypes from 'prop-types';
 import { Delete } from '@mui/icons-material';
 import config from '~/config';
 import images from '~/assets/images';
-import { Fancybox } from '~/components/Fancybox';
+import Fancybox from '~/components/Fancybox';
+import { SliderConfirm } from '~/components/Slider';
 
 function SliderList({ data = [], onDelete }) {
 	const sliderTypes = useMemo(() => config.slider.positions, []);
+
+	const [openDialog, setOpenDialog] = useState(false);
+	const [itemToDelete, setItemToDelete] = useState(null);
+
+	const handleClose = () => {
+		setOpenDialog(false);
+	};
+
+	const handleConfirmDelete = (item) => {
+		if (item) {
+			setOpenDialog(true);
+			setItemToDelete(item);
+		}
+	};
 
 	return (
 		<>
@@ -52,7 +68,7 @@ function SliderList({ data = [], onDelete }) {
 										<td className="tw-py-3 tw-px-4 tw-text-center">
 											<span
 												className="tw-text-red-600 hover:tw-text-red-800 tw-cursor-pointer"
-												onClick={() => onDelete(item._id)}
+												onClick={() => handleConfirmDelete(item)}
 											>
 												<Delete fontSize="small" />
 											</span>
@@ -63,8 +79,14 @@ function SliderList({ data = [], onDelete }) {
 					</tbody>
 				</table>
 			</div>
+			<SliderConfirm open={openDialog} data={itemToDelete} onClose={handleClose} onDelete={onDelete} />
 		</>
 	);
 }
+
+SliderList.propTypes = {
+	data: PropTypes.array.isRequired,
+	onDelete: PropTypes.func.isRequired
+};
 
 export default memo(SliderList);

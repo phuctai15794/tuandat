@@ -14,7 +14,9 @@ import {
 	Button,
 	Snackbar,
 	Alert,
-	Box
+	Box,
+	Backdrop,
+	CircularProgress
 } from '@mui/material';
 import { Clear, Save, AddPhotoAlternate } from '@mui/icons-material';
 import { createPreSignedURL, uploadByPreSignedURL, uploadPhoto, getPhotos, detelePhoto } from '~/services';
@@ -39,6 +41,7 @@ export default function Home() {
 	const [errorText, setErrorText] = useState('');
 	const [errorField, setErrorField] = useState('');
 	const [openSnackBar, setOpenSnackBar] = useState(false);
+	const [openBackdrop, setOpenBackdrop] = useState(false);
 
 	useEffect(() => {
 		return () => {
@@ -58,7 +61,7 @@ export default function Home() {
 		}
 	}, [isFetch]);
 
-	const handleChangeFile = (e) => {
+	const handleChangeFile = async (e) => {
 		const { files } = e.target;
 		let photosData = [];
 		let photosExceedSize = [];
@@ -109,6 +112,8 @@ export default function Home() {
 				setPhotoInputs(photosData);
 			}
 		}
+
+		e.target.value = null;
 	};
 
 	const handleChangeType = (e) => {
@@ -131,7 +136,9 @@ export default function Home() {
 		}
 	}, []);
 
-	const handleSave = () => {
+	const handleSave = async () => {
+		setOpenBackdrop(true);
+
 		if (photoInputs.length === 0) {
 			setErrorText('Please choose a photo');
 			setOpenSnackBar(true);
@@ -140,7 +147,7 @@ export default function Home() {
 			setErrorText('Please choose a type');
 			setOpenSnackBar(true);
 		} else {
-			Promise.all(
+			await Promise.all(
 				photoInputs.map((photo) =>
 					createPreSignedURL({
 						file_name: photo.name,
@@ -197,6 +204,8 @@ export default function Home() {
 					console.log('Error Get PreSigned URL:', error);
 				});
 		}
+
+		setOpenBackdrop(false);
 	};
 
 	const handleClear = () => {
@@ -348,6 +357,9 @@ export default function Home() {
 					{errorText}
 				</Alert>
 			</Snackbar>
+			<Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={openBackdrop}>
+				<CircularProgress color="inherit" />
+			</Backdrop>
 		</>
 	);
 }
