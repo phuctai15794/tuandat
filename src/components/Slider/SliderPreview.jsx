@@ -6,7 +6,6 @@ import Fancybox from '~/components/Fancybox';
 import images from '~/assets/images';
 
 function SliderPreview({ data = [], onDelete }) {
-	console.log(images.blur);
 	return (
 		<>
 			{data.length ? (
