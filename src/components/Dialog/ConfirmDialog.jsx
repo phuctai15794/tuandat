@@ -1,20 +1,21 @@
 import PropTypes from 'prop-types';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
-function SliderConfirm({ open, data = null, onClose, onDelete }) {
+function ConfirmDialog({ open, title, content, onConfirm }) {
+	console.log('render confirm dialog');
+
 	const handleCancel = () => {
-		onClose();
+		onConfirm(false);
 	};
 
 	const handleOk = () => {
-		data && onDelete(data._id);
-		onClose();
+		onConfirm(true);
 	};
 
 	return (
 		<Dialog sx={{ '& .MuiDialog-paper': { width: '80%' } }} maxWidth="xs" open={open}>
-			<DialogTitle>Delete confirmation</DialogTitle>
-			<DialogContent dividers>Do you want to delete this item ?</DialogContent>
+			<DialogTitle>{title}</DialogTitle>
+			<DialogContent dividers>{content}</DialogContent>
 			<DialogActions>
 				<Button autoFocus onClick={handleCancel}>
 					No
@@ -25,11 +26,11 @@ function SliderConfirm({ open, data = null, onClose, onDelete }) {
 	);
 }
 
-SliderConfirm.propTypes = {
+ConfirmDialog.propTypes = {
 	open: PropTypes.bool.isRequired,
-	data: PropTypes.object,
-	onClose: PropTypes.func.isRequired,
-	onDelete: PropTypes.func.isRequired
+	title: PropTypes.string.isRequired,
+	content: PropTypes.string.isRequired,
+	onConfirm: PropTypes.func.isRequired
 };
 
-export default SliderConfirm;
+export default ConfirmDialog;

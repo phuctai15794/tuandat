@@ -210,7 +210,7 @@ export default function Home() {
 
 	const handleClear = () => {
 		setPhotoInputs([]);
-		setType('');
+		setType(defaultType);
 		setErrorText('');
 		setErrorField('');
 		setOpenSnackBar(false);

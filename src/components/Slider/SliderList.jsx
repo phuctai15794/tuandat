@@ -1,26 +1,37 @@
 import { memo, useMemo, useState } from 'react';
 import Image from 'next/future/image';
 import PropTypes from 'prop-types';
+import { Backdrop, CircularProgress } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import config from '~/config';
 import images from '~/assets/images';
 import Fancybox from '~/components/Fancybox';
-import { SliderConfirm } from '~/components/Slider';
+import { ConfirmDialog } from '~/components/Dialog';
 
 function SliderList({ data = [], onDelete }) {
 	const sliderTypes = useMemo(() => config.slider.positions, []);
 
-	const [openDialog, setOpenDialog] = useState(false);
-	const [itemToDelete, setItemToDelete] = useState(null);
+	console.log('render slider list');
 
-	const handleClose = () => {
+	const [deleteId, setDeleteId] = useState(null);
+	const [openDialog, setOpenDialog] = useState(false);
+	const [openBackdrop, setOpenBackdrop] = useState(false);
+
+	const handleConfirm = async (confirm) => {
+		setOpenBackdrop(true);
+
+		if (confirm) {
+			await onDelete(deleteId);
+		}
+
+		setOpenBackdrop(false);
 		setOpenDialog(false);
 	};
 
-	const handleConfirmDelete = (item) => {
-		if (item) {
+	const handleDelete = (id) => {
+		if (id) {
 			setOpenDialog(true);
-			setItemToDelete(item);
+			setDeleteId(id);
 		}
 	};
 
@@ -68,7 +79,7 @@ function SliderList({ data = [], onDelete }) {
 										<td className="tw-py-3 tw-px-4 tw-text-center">
 											<span
 												className="tw-text-red-600 hover:tw-text-red-800 tw-cursor-pointer"
-												onClick={() => handleConfirmDelete(item)}
+												onClick={() => handleDelete(item._id)}
 											>
 												<Delete fontSize="small" />
 											</span>
@@ -79,7 +90,15 @@ function SliderList({ data = [], onDelete }) {
 					</tbody>
 				</table>
 			</div>
-			<SliderConfirm open={openDialog} data={itemToDelete} onClose={handleClose} onDelete={onDelete} />
+			<ConfirmDialog
+				open={openDialog}
+				title="Delete confirmation"
+				content="Do you want to delete this item ?"
+				onConfirm={handleConfirm}
+			/>
+			<Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={openBackdrop}>
+				<CircularProgress color="inherit" />
+			</Backdrop>
 		</>
 	);
 }
