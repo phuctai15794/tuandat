@@ -1,9 +1,8 @@
+import { memo } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 function ConfirmDialog({ open, title, content, onConfirm }) {
-	console.log('render confirm dialog');
-
 	const handleCancel = () => {
 		onConfirm(false);
 	};
@@ -33,4 +32,4 @@ ConfirmDialog.propTypes = {
 	onConfirm: PropTypes.func.isRequired
 };
 
-export default ConfirmDialog;
+export default memo(ConfirmDialog);

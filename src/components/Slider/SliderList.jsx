@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import Image from 'next/future/image';
 import PropTypes from 'prop-types';
 import { Backdrop, CircularProgress } from '@mui/material';
@@ -11,22 +11,23 @@ import { ConfirmDialog } from '~/components/Dialog';
 function SliderList({ data = [], onDelete }) {
 	const sliderTypes = useMemo(() => config.slider.positions, []);
 
-	console.log('render slider list');
-
 	const [deleteId, setDeleteId] = useState(null);
 	const [openDialog, setOpenDialog] = useState(false);
 	const [openBackdrop, setOpenBackdrop] = useState(false);
 
-	const handleConfirm = async (confirm) => {
-		setOpenBackdrop(true);
+	const handleConfirm = useCallback(
+		async (confirm) => {
+			setOpenBackdrop(true);
 
-		if (confirm) {
-			await onDelete(deleteId);
-		}
+			if (confirm) {
+				await onDelete(deleteId);
+			}
 
-		setOpenBackdrop(false);
-		setOpenDialog(false);
-	};
+			setOpenBackdrop(false);
+			setOpenDialog(false);
+		},
+		[deleteId]
+	);
 
 	const handleDelete = (id) => {
 		if (id) {
