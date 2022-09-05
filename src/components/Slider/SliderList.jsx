@@ -64,7 +64,7 @@ function SliderList({ data = [], onDelete }) {
 									<tr key={item._id} className="tw-bg-white tw-border-b hover:tw-bg-gray-50">
 										<th className="tw-py-3 tw-px-4 tw-text-center">
 											<Fancybox options={{ infinite: false }}>
-												<div className="tw-bg-slate-100 tw-border tw-border-solid tw-border-neutral-300 tw-p-1 tw-rounded-md tw-align-top tw-overflow-hidden">
+												<div className="tw-inline-block tw-bg-slate-100 tw-border tw-border-solid tw-border-neutral-300 tw-p-1 tw-rounded-md tw-overflow-hidden">
 													<Image
 														className="tw-align-top tw-cursor-pointer"
 														src={item.image_url ?? images.noImage}
