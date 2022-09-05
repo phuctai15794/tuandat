@@ -65,12 +65,14 @@ function SliderList({ data = [], onDelete }) {
 										<th className="tw-py-3 tw-px-4 tw-text-center">
 											<Fancybox options={{ infinite: false }}>
 												<Image
-													className="tw-bg-slate-100 tw-border tw-border-solid tw-border-neutral-300 tw-p-1 tw-rounded-md tw-align-top"
+													className="tw-bg-slate-100 tw-border tw-border-solid tw-border-neutral-300 tw-p-1 tw-rounded-md tw-align-top tw-cursor-pointer"
 													src={item.image_url ?? images.noImage}
 													width={70}
 													height={70}
 													alt={item.image_url}
 													loading="lazy"
+													placeholder="blur"
+													blurDataURL={images.blur.default.src}
 													data-fancybox="SliderList"
 													data-src={item.image_url ?? images.noImage}
 												/>

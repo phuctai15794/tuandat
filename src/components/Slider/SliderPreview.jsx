@@ -16,7 +16,7 @@ function SliderPreview({ data = [], onDelete }) {
 								<Fancybox options={{ infinite: false }}>
 									<div className="tw-bg-slate-100 tw-border tw-border-solid tw-border-neutral-300 tw-p-1 tw-rounded-md tw-align-top tw-overflow-hidden">
 										<Image
-											className="tw-align-top"
+											className="tw-align-top tw-cursor-pointer"
 											src={item.preview ?? images.noImage}
 											width={60}
 											height={60}
